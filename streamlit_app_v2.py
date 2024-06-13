@@ -205,14 +205,21 @@ def process_image(_image, filter_type):
     else:
         return _image
 
-# 充值頁面
 def recharge_page():
     st.header("充值頁面")
     st.write("這是充值頁面。")
     
+    card_number = st.text_input("卡號")
+    name = st.text_input("姓名")
+    email = st.text_input("Email")
+    birth_date = st.date_input("出生年月日")
+    
     if st.button("充值"):
-        st.session_state['remaining_uses'] += 10
-        st.success("充值成功！剩餘服務次數已增加。")
+        if card_number and name and email and birth_date:
+            st.session_state['remaining_uses'] += 10
+            st.success("充值成功！剩餘服務次數已增加。")
+        else:
+            st.error("請填寫所有必填欄位。")
 
 # yt頁面
 def yt_page():
