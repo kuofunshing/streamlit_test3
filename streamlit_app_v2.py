@@ -227,7 +227,7 @@ def yt_page():
 
     video_options = {
         "影片 1": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=74s&pp=ygUXbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXA%3D",
-        "影片 2": "https://www.youtube.com/watch?v=tJuJ0Dls1hI&ab_channel=%E9%88%BE%E9%88%A6%E4%BA%BA%E6%AF%92%E6%B0%A3%E9%81%8E%E5%BA%A6%E9%9C%80%E8%A6%81",
+        "影片 2": "https://www.youtube.com/watch?v=tJuJ0Dls1hI&ab_channel=%E8%B6%85%E6%B7%B1%E5%B0%8F%E9%87%8E%E8%8C%B6%E9%A3%B2%E9%81%8E%E5%BA%A6%E9%9C%80%E8%A6%81",
         "影片 3": "https://www.youtube.com/watch?v=shRV-LIbsO8&ab_channel=GundamInfo",
         "影片 4": "https://www.youtube.com/watch?v=CnUIs6aLjic&ab_channel=GundamInfo",
         "影片 5": "https://www.youtube.com/watch?v=CI41ouIbu2I&ab_channel=GundamInfo",
@@ -250,6 +250,10 @@ def yt_page():
 # Llama2 Chatbot 頁面
 def llama2_chatbot_page():
     st.title("🦙💬 Llama 2 Chatbot")
+
+    if st.session_state['remaining_uses'] <= 0:
+        st.warning("剩餘服務次數不足，請充值。")
+        return
 
     # Replicate Credentials
     with st.sidebar:
@@ -326,6 +330,7 @@ def llama2_chatbot_page():
                 placeholder.markdown(full_response)
         message = {"role": "assistant", "content": full_response}
         st.session_state.messages.append(message)
+        st.session_state['remaining_uses'] -= 5  # 每次對話減少5次次數
 
 if __name__ == "__main__":
     main()
