@@ -3,6 +3,7 @@ import replicate
 import os
 import sqlite3
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+from datetime import date
 
 # App title
 st.set_page_config(page_title="🦙💬 Llama 2 Chatbot")
@@ -14,6 +15,16 @@ c.execute('''
     CREATE TABLE IF NOT EXISTS users (
         username TEXT PRIMARY KEY,
         password TEXT
+    )
+''')
+c.execute('''
+    CREATE TABLE IF NOT EXISTS recharge_info (
+        card_number TEXT,
+        name TEXT,
+        email TEXT,
+        birth_date DATE,
+        username TEXT,
+        FOREIGN KEY (username) REFERENCES users (username)
     )
 ''')
 conn.commit()
@@ -99,7 +110,7 @@ def validate_signup(username):
     return c.fetchone()
 
 def create_user(username, password):
-    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    c.execute("INSERT INTO users (username, password) VALUES (?, ?, ?)", (username, password))
     conn.commit()
 
 def api_key_page():
@@ -209,14 +220,36 @@ def recharge_page():
     card_number = st.text_input("卡號")
     name = st.text_input("姓名")
     email = st.text_input("Email")
-    birth_date = st.date_input("出生年月日")
+    birth_date = st.date_input("出生年月日", min_value=date(1900, 1, 1), max_value=date.today())
     
     if st.button("充值"):
         if card_number and name and email and birth_date:
+            c.execute("INSERT INTO recharge_info (card_number, name, email, birth_date, username) VALUES (?, ?, ?, ?, ?)",
+                      (card_number, name, email, birth_date, st.session_state['username']))
+            conn.commit()
             st.session_state['remaining_uses'] += 10
-            st.success("充值成功！剩餘服務次數已增加。")
+            st.success("充值成功！剩餘服務次數已增加10次。")
         else:
-            st.error("請填寫所有必填欄位。")
+            st.error("請填寫所有信息。")
+
+def llama2_chatbot_page():
+    st.title("Llama2 Chatbot")
+    st.write("這是 Llama2 Chatbot 頁面。")
+
+    if st.session_state['remaining_uses'] <= 0:
+        st.warning("剩餘服務次數不足，請充值。")
+        return
+
+    prompt = st.text_input("請輸入您的問題：")
+
+    if st.button("提交"):
+        if prompt:
+            output = generate_response(prompt)
+            st.session_state['remaining_uses'] -= 1
+            st.write("回應：", output)
+        else:
+            st.warning("請輸入問題。")
+
 
 # yt頁面
 def yt_page():
