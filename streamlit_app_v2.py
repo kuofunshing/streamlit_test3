@@ -111,10 +111,10 @@ def create_user(username, password):
     conn.commit()
     conn.close()
 
-# 圖片處理頁面
+# 圖片頁面
 def data_page():
-    st.header("圖片處理")
-    st.write("這是圖片處理頁面。")
+    st.header("圖片")
+    st.write("這是圖片頁面。")
   
     if st.session_state['remaining_uses'] <= 0:
         st.warning("剩餘服務次數不足，請充值。")
@@ -133,7 +133,12 @@ def recharge_page():
     st.write("這是充值頁面。")
     
     card_number = st.text_input("卡號", type="password")
-    month_year = st.text_input("年月")
+    
+    months = [f"{i:02d}" for i in range(1, 13)]
+    years = [f"{i:02d}" for i in range(0, 25)]
+    month_year_options = [f"{month}/{year}" for year in years for month in months]
+    
+    month_year = st.selectbox("選擇年月", month_year_options)
     cvv = st.text_input("CVV")
     amount_option = st.selectbox("選擇充值金額", ["10次,100元", "100次,9990元", "1000次,99900元"])
     
@@ -148,6 +153,7 @@ def recharge_page():
             st.success("充值成功！剩餘服務次數已增加。")
         else:
             st.error("請填寫所有必填欄位。")
+
 
 def llama2_chatbot_page():
     st.title("Llama2 Chatbot")
