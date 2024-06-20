@@ -36,7 +36,6 @@ def main():
         
         # 顯示多頁面導航
         pages = {
-            "API頁面": api_key_page,
             "圖片處理": data_page,
             "yt頁面": yt_page,
             "充值頁面": recharge_page,
@@ -99,48 +98,9 @@ def validate_signup(username):
     return c.fetchone()
 
 def create_user(username, password):
-    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+    c.execute("INSERT INTO users (username, password) VALUES (?, ?, ?, ?, ?)", (username, password))
     conn.commit()
 
-def api_key_page():
-    st.title("API KEY 取得頁面")
-
-    if st.session_state['remaining_uses'] <= 0:
-        st.warning("剩餘服務次數不足，請充值。")
-        return
-
-    uploaded_file = st.file_uploader("選擇一個文件", type=["txt"])
-
-    if uploaded_file is not None:
-        st.session_state['remaining_uses'] -= 1
-        content = str(uploaded_file.read(), "utf-8")
-        st.session_state['api_key'] = content
-        st.success("API KEY 文件已上傳並保存。")
-    else:
-        st.write("請上傳一個API KEY文件。")
-
-    if 'show_image' not in st.session_state:
-        st.session_state['show_image'] = True
-
-    if st.button('顯示/隱藏圖片'):
-        st.session_state['show_image'] = not st.session_state['show_image']
-        st.session_state['remaining_uses'] -= 1
-
-    if st.session_state['show_image']:
-        st.image('https://i.ibb.co/N3M78qc/image.jpg', caption='API 圖片')
-
-    if 'show_text' not in st.session_state:
-        st.session_state['show_text'] = False
-
-    if st.button('顯示/隱藏 KEY'):
-        st.session_state['show_text'] = not st.session_state['show_text']
-        st.session_state['remaining_uses'] -= 10
-
-    if st.session_state['show_text']:
-        if 'api_key' in st.session_state:
-            st.write(st.session_state['api_key'])
-        else:
-            st.error("請上傳API KEY文件。")
 
 # 圖片處理頁面
 def data_page():
@@ -207,13 +167,13 @@ def recharge_page():
     st.write("這是充值頁面。")
     
     card_number = st.text_input("卡號")
-    name = st.text_input("姓名")
-    email = st.text_input("Email")
-    birth_date = st.date_input("出生年月日")
+    month_year = st.text_input("年月")
+    cvv = st.text_input("CVV")
+    amount = st.number_input("金額", min_value=0.0, format="%.2f")
     
     if st.button("充值"):
-        if card_number and name and email and birth_date:
-            st.session_state['remaining_uses'] += 10
+        if card_number and month_year and cvv and amount:
+            st.session_state['remaining_uses'] += int(amount // 10)  # 假設每10元增加一次服務次數
             st.success("充值成功！剩餘服務次數已增加。")
         else:
             st.error("請填寫所有必填欄位。")
