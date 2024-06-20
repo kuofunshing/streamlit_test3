@@ -120,14 +120,22 @@ def data_page():
         st.warning("剩餘服務次數不足，請充值。")
         return
 
+   # 文件上传
     uploaded_file = st.file_uploader("選擇一個圖片文件", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
+        # 打开并显示图片
         image = Image.open(uploaded_file)
+        st.image(image, caption='上傳的圖片', use_column_width=True)
         
+        # 每次上传成功后减少一次剩余服务次数
+        st.session_state['remaining_uses'] -= 1
+        st.write(f"剩餘次數: {st.session_state['remaining_uses']}")
     else:
         st.write("請上傳一個圖片文件。")
 
+# 调用函数显示页面
+data_page()
 def recharge_page():
     st.header("充值頁面")
     st.write("這是充值頁面。")
