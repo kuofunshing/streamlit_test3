@@ -1,24 +1,9 @@
 import streamlit as st
-import replicate
-import os
 import sqlite3
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 # App title
 st.set_page_config(page_title="🦙💬 Llama 2 Chatbot")
-import sqlite3
-
-# 创建数据库文件
-conn = sqlite3.connect('users.db')
-c = conn.cursor()
-c.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password TEXT
-    )
-''')
-conn.commit()
-conn.close()
 
 # 初始化數據庫
 conn = sqlite3.connect('users.db')
@@ -30,6 +15,7 @@ c.execute('''
     )
 ''')
 conn.commit()
+conn.close()
 
 def main():
     st.sidebar.title("導航")
@@ -103,17 +89,27 @@ def signup():
             st.error("用戶名已存在，請選擇其他用戶名。")
 
 def validate_login(username, password):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
     c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
-    return c.fetchone()
+    user = c.fetchone()
+    conn.close()
+    return user
 
 def validate_signup(username):
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
     c.execute("SELECT * FROM users WHERE username = ?", (username,))
-    return c.fetchone()
+    user = c.fetchone()
+    conn.close()
+    return user
 
 def create_user(username, password):
-    c.execute("INSERT INTO users (username, password) VALUES (?, ?, ?, ?, ?)", (username, password))
+    conn = sqlite3.connect('users.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
     conn.commit()
-
+    conn.close()
 
 # 圖片處理頁面
 def data_page():
@@ -134,7 +130,6 @@ def data_page():
             'BRIGHTNESS', 'CONTRAST', 'COLOR', 'INVERT', 'GRAYSCALE'
         ])
         processed_image = process_image(image, filter_type)
-        st.session_state['remaining_uses'] -= 1
         st.image(processed_image, caption='處理後的圖片', use_column_width=True)
         if st.button("確認處理"):
             st.session_state['remaining_uses'] -= 1
@@ -190,7 +185,6 @@ def recharge_page():
             st.success("充值成功！剩餘服務次數已增加。")
         else:
             st.error("請填寫所有必填欄位。")
-
 def llama2_chatbot_page():
     st.title("Llama2 Chatbot")
     st.write("這是 Llama2 Chatbot 頁面。")
