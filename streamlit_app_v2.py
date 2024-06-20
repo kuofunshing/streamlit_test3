@@ -6,6 +6,19 @@ from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 # App title
 st.set_page_config(page_title="🦙💬 Llama 2 Chatbot")
+import sqlite3
+
+# 创建数据库文件
+conn = sqlite3.connect('users.db')
+c = conn.cursor()
+c.execute('''
+    CREATE TABLE IF NOT EXISTS users (
+        username TEXT PRIMARY KEY,
+        password TEXT
+    )
+''')
+conn.commit()
+conn.close()
 
 # 初始化數據庫
 conn = sqlite3.connect('users.db')
