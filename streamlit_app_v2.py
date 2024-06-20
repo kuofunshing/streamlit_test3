@@ -136,9 +136,12 @@ def recharge_page():
     
     months = [f"{i:02d}" for i in range(1, 13)]
     years = [f"{i:02d}" for i in range(0, 25)]
-    month_year_options = [f"{month}/{year}" for year in years for month in months]
     
-    month_year = st.selectbox("選擇年月", month_year_options)
+    selected_month = st.selectbox("選擇月份", months)
+    selected_year = st.selectbox("選擇年份", years)
+    
+    month_year = f"{selected_month}/{selected_year}"
+    
     cvv = st.text_input("CVV")
     amount_option = st.selectbox("選擇充值金額", ["10次,100元", "100次,9990元", "1000次,99900元"])
     
