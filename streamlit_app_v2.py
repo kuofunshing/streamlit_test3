@@ -1,6 +1,7 @@
 import streamlit as st
 import sqlite3
-from PIL import Image, ImageFilter, ImageEnhance, ImageOps
+import os
+from PIL import Image
 
 # App title
 st.set_page_config(page_title="🦙💬 Llama 2 Chatbot")
@@ -120,7 +121,7 @@ def data_page():
         st.warning("剩餘服務次數不足，請充值。")
         return
 
-   # 文件上传
+    # 文件上传
     uploaded_file = st.file_uploader("選擇一個圖片文件", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
@@ -134,8 +135,6 @@ def data_page():
     else:
         st.write("請上傳一個圖片文件。")
 
-# 调用函数显示页面
-data_page()
 def recharge_page():
     st.header("充值頁面")
     st.write("這是充值頁面。")
@@ -165,25 +164,6 @@ def recharge_page():
         else:
             st.error("請填寫所有必填欄位，並確保CVV為3位數字。")
 
-
-def llama2_chatbot_page():
-    st.title("Llama2 Chatbot")
-    st.write("這是 Llama2 Chatbot 頁面。")
-
-    if st.session_state['remaining_uses'] <= 0:
-        st.warning("剩餘服務次數不足，請充值。")
-        return
-
-    prompt = st.text_input("請輸入您的問題：")
-
-    if st.button("提交"):
-        if prompt:
-            output = generate_response(prompt)
-            st.session_state['remaining_uses'] -= 1
-            st.write("回應：", output)
-        else:
-            st.warning("請輸入問題。")
-
 def yt_page():
     st.header("yt頁面")
     st.write("這是yt頁面。")
@@ -212,8 +192,6 @@ def yt_page():
     if st.button("播放"):
         st.session_state['remaining_uses'] -= 1
         st.video(video_options[selected_video])
-
-
 def llama2_chatbot_page():
     st.title("🦙💬 Llama 2 Chatbot")
 
