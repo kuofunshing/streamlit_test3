@@ -124,67 +124,31 @@ def data_page():
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        filter_type = st.selectbox("選擇一個濾鏡", [
-            'BLUR', 'CONTOUR', 'DETAIL', 'SHARPEN', 
-            'EDGE_ENHANCE', 'EMBOSS', 'FIND_EDGES', 'SMOOTH',
-            'BRIGHTNESS', 'CONTRAST', 'COLOR', 'INVERT', 'GRAYSCALE'
-        ])
-        processed_image = process_image(image, filter_type)
-        st.image(processed_image, caption='處理後的圖片', use_column_width=True)
-        if st.button("確認處理"):
-            st.session_state['remaining_uses'] -= 1
+        
     else:
         st.write("請上傳一個圖片文件。")
-
-@st.cache_data
-def process_image(_image, filter_type):
-    if filter_type == 'BLUR':
-        return _image.filter(ImageFilter.BLUR)
-    elif filter_type == 'CONTOUR':
-        return _image.filter(ImageFilter.CONTOUR)
-    elif filter_type == 'DETAIL':
-        return _image.filter(ImageFilter.DETAIL)
-    elif filter_type == 'SHARPEN':
-        return _image.filter(ImageFilter.SHARPEN)
-    elif filter_type == 'EDGE_ENHANCE':
-        return _image.filter(ImageFilter.EDGE_ENHANCE)
-    elif filter_type == 'EMBOSS':
-        return _image.filter(ImageFilter.EMBOSS)
-    elif filter_type == 'FIND_EDGES':
-        return _image.filter(ImageFilter.FIND_EDGES)
-    elif filter_type == 'SMOOTH':
-        return _image.filter(ImageFilter.SMOOTH)
-    elif filter_type == 'BRIGHTNESS':
-        enhancer = ImageEnhance.Brightness(_image)
-        return enhancer.enhance(1.5)  # 1.5是亮度增強的係數
-    elif filter_type == 'CONTRAST':
-        enhancer = ImageEnhance.Contrast(_image)
-        return enhancer.enhance(1.5)  # 1.5是對比度增強的係數
-    elif filter_type == 'COLOR':
-        enhancer = ImageEnhance.Color(_image)
-        return enhancer.enhance(1.5)  # 1.5是顏色增強的係數
-    elif filter_type == 'INVERT':
-        return ImageOps.invert(_image.convert("RGB"))
-    elif filter_type == 'GRAYSCALE':
-        return _image.convert("L")
-    else:
-        return _image
 
 def recharge_page():
     st.header("充值頁面")
     st.write("這是充值頁面。")
     
-    card_number = st.text_input("卡號")
+    card_number = st.text_input("卡號", type="password")
     month_year = st.text_input("年月")
     cvv = st.text_input("CVV")
-    amount = st.number_input("金額", min_value=0.0, format="%.2f")
+    amount_option = st.selectbox("選擇充值金額", ["10次,100元", "100次,9990元", "1000次,99900元"])
     
     if st.button("充值"):
-        if card_number and month_year and cvv and amount:
-            st.session_state['remaining_uses'] += int(amount // 10)  # 假設每10元增加一次服務次數
+        if card_number and month_year and cvv and amount_option:
+            amount_map = {
+                "10次,100元": 10,
+                "100次,9990元": 100,
+                "1000次,99900元": 1000
+            }
+            st.session_state['remaining_uses'] += amount_map[amount_option]
             st.success("充值成功！剩餘服務次數已增加。")
         else:
             st.error("請填寫所有必填欄位。")
+
 def llama2_chatbot_page():
     st.title("Llama2 Chatbot")
     st.write("這是 Llama2 Chatbot 頁面。")
@@ -203,8 +167,6 @@ def llama2_chatbot_page():
         else:
             st.warning("請輸入問題。")
 
-
-# yt頁面
 def yt_page():
     st.header("yt頁面")
     st.write("這是yt頁面。")
@@ -215,7 +177,7 @@ def yt_page():
         st.warning("剩餘服務次數不足，請充值。")
         return
 
-    video_options =    video_options = {
+    video_options = {
         "影片 1": "https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=74s&pp=ygUXbmV2ZXIgZ29ubmEgZ2l2ZSB5b3UgdXA%3D",
         "影片 2": "https://www.youtube.com/watch?v=tJuJ0Dls1hI&ab_channel=%E9%88%BE%E9%88%A6%E4%BA%BA%E6%AF%92%E6%B0%A3%E9%81%8E%E5%BA%A6%E9%9C%80%E8%A6%81",
         "影片 3": "https://www.youtube.com/watch?v=shRV-LIbsO8&ab_channel=GundamInfo",
@@ -233,6 +195,7 @@ def yt_page():
     if st.button("播放"):
         st.session_state['remaining_uses'] -= 1
         st.video(video_options[selected_video])
+
 
 def llama2_chatbot_page():
     st.title("🦙💬 Llama 2 Chatbot")
