@@ -142,11 +142,11 @@ def recharge_page():
     
     month_year = f"{selected_month}/{selected_year}"
     
-    cvv = st.text_input("CVV")
+    cvv = st.text_input("CVV", max_chars=3)
     amount_option = st.selectbox("選擇充值金額", ["10次,100元", "100次,9990元", "1000次,99900元"])
     
     if st.button("充值"):
-        if card_number and month_year and cvv and amount_option:
+        if card_number and month_year and cvv.isdigit() and len(cvv) == 3 and amount_option:
             amount_map = {
                 "10次,100元": 10,
                 "100次,9990元": 100,
@@ -155,7 +155,7 @@ def recharge_page():
             st.session_state['remaining_uses'] += amount_map[amount_option]
             st.success("充值成功！剩餘服務次數已增加。")
         else:
-            st.error("請填寫所有必填欄位。")
+            st.error("請填寫所有必填欄位，並確保CVV為3位數字。")
 
 
 def llama2_chatbot_page():
