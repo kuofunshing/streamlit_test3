@@ -3,7 +3,7 @@ import sqlite3
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 
 # App title
-st.set_page_config(page_title="🦙💬 Llama 2 Chatbot")
+st.set_page_config(page_title="GPT Chatbot")
 
 # 初始化數據庫
 conn = sqlite3.connect('users.db')
